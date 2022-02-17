@@ -9,7 +9,7 @@ scale_sample(
   y,
   shape = "square",
   size,
-  max_size,
+  max_size = NULL,
   verbose = TRUE,
   progress = FALSE,
   ...
@@ -64,6 +64,17 @@ my_points = matrix(c(1265000, 1250000, 1255000, 1257000),
 
 scale_sample(landscape = augusta_nlcd, y = my_points,
 size = 500, max_size = 5000, what = c("lsm_l_ent", "lsm_l_mutinf"))
+
+# using sf, irregular buffers
+my_points = matrix(c(1265000, 1250000, 1255000, 1257000),
+                   ncol = 2, byrow = TRUE) \%>\%
+ as.data.frame() \%>\%
+ sf::st_as_sf(coords = c(1,2))
+
+scale_sample(landscape = augusta_nlcd, y = my_points,
+             size = c(500, 1000, 2000, 3000),
+             max_size = NULL, what = c("lsm_c_enn_mn"))
+
 
 }
 \seealso{

@@ -46,6 +46,17 @@
 #' scale_sample(landscape = augusta_nlcd, y = my_points,
 #' size = 500, max_size = 5000, what = c("lsm_l_ent", "lsm_l_mutinf"))
 #'
+#' # using sf, irregular buffers
+#' my_points = matrix(c(1265000, 1250000, 1255000, 1257000),
+#'                    ncol = 2, byrow = TRUE) %>%
+#'  as.data.frame() %>%
+#'  sf::st_as_sf(coords = c(1,2))
+#'
+#' scale_sample(landscape = augusta_nlcd, y = my_points,
+#'              size = c(500, 1000, 2000, 3000),
+#'              max_size = NULL, what = c("lsm_c_enn_mn"))
+#'
+#'
 #' @aliases scale_sample
 #' @rdname scale_sample
 #'
@@ -53,7 +64,7 @@
 scale_sample <- function(landscape,
                               y,
                               shape = "square",
-                              size, max_size,
+                              size, max_size = NULL,
                               verbose = TRUE,
                               progress = FALSE,
                               ...) {
@@ -99,13 +110,15 @@ scale_sample <- function(landscape,
 
 scale_sample_int_multibuffer <- function(landscape,
                                          y,
-                                         shape, size, max_size,
+                                         shape, size, max_size = NULL,
                                          verbose,
                                          progress,
                                          ...) {
 
     # create buffer sequence
-    size <- seq(from = size, to = max_size, by = size)
+    if(!is.null(max_size)) {
+        size <- seq(from = size, to = max_size, by = size)
+    }
 
     # loop through buffers
     result <- do.call(rbind, lapply(X = seq_along(size), FUN = function(x) {
@@ -137,7 +150,7 @@ scale_sample_int <- function(landscape,
 
     # use points
     if (inherits(x = y,
-                 what = c("SpatialPoints", "SpatialPointsDataFrame", "matrix"))) {
+                 what = c("SpatialPoints", "SpatialPointsDataFrame", "matrix", "sf", "sfc"))) {
 
         # points are matrix
         if (inherits(x = y, what = "matrix")) {
